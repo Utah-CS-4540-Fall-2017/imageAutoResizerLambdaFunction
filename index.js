@@ -141,15 +141,13 @@ exports.handler = (event, context, callback) => {
   async_get_object(
     original_filename,
     function(data){
-      for (let i=0; i < resolutions.length; i++){
-        async_generate_resolution_and_save(
-          data,
-          requested_filename,
-          requested_resolution,
-          function(){ console.log('New file created: ' + requested_filename + ' at ' + requested_resolution); },
-          function(err){ console.log(err); }
-        );
-      }
+      async_generate_resolution_and_save(
+        data,
+        requested_filename,
+        requested_resolution,
+        function(){ console.log('New file created: ' + requested_filename + ' at ' + requested_resolution); },
+        function(err){ console.log(err); }
+      );
     },
     function(err){
       console.log('Unable to get the original file.');
