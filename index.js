@@ -128,35 +128,32 @@ function async_generate_resolution_and_save(image_data, target_image_name, targe
 
 
 exports.handler = (event, context, callback) => {
-  for (let i=0; i < event['Records'].length; i++) {
+  // requested_filename is the file that does not yet exist,
+  // e.g. 23x23_Rizzo.png
+  let requested_filename = event['queryStringParameters']['requested_filename'];
 
-    // requested_filename is the file that does not yet exist,
-    // e.g. 23x23_Rizzo.png
-    let requested_filename = event['Records'][i]['s3']['object']['key'];
+  // requested resolution is [23,23]
+  let requested_resolution = get_resolution_from_filename(requested_filename);
 
-    // requested resolution is [23,23]
-    let requested_resolution = get_resolution_from_filename(requested_filename);
+  // original filename is Rizzo.png
+  let original_filename = get_original_filename(requested_filename);
 
-    // original filename is Rizzo.png
-    let original_filename = get_original_filename(requested_filename);
-
-    async_get_object(
-      original_filename,
-      function(data){
-        for (let i=0; i < resolutions.length; i++){
-          async_generate_resolution_and_save(
-            data,
-            requested_filename,
-            requested_resolution,
-            function(){ console.log('New file created: ' + requested_filename + ' at ' + requested_resolution); },
-            function(err){ console.log(err); }
-          );
-        }
-      },
-      function(err){
-        console.log('Unable to get the original file.');
+  async_get_object(
+    original_filename,
+    function(data){
+      for (let i=0; i < resolutions.length; i++){
+        async_generate_resolution_and_save(
+          data,
+          requested_filename,
+          requested_resolution,
+          function(){ console.log('New file created: ' + requested_filename + ' at ' + requested_resolution); },
+          function(err){ console.log(err); }
+        );
       }
-    );
-    callback(null, 'Execution complete.');
-  }
+    },
+    function(err){
+      console.log('Unable to get the original file.');
+    }
+  );
+  callback(null, 'Execution complete.');
 }
