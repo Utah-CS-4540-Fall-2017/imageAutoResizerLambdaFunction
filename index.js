@@ -21,6 +21,9 @@ const target_bucket_name = 'cs4540-fall2017-' + github_username + '-sized';
 // e.g. 30x30-Rizzo.png or 200x200_Mypet.jpg
 const fname_regex = /(\d+)x(\d+)[_-](.+)/
 
+// get the url of the s3 bucket from the URL environment var
+const URL = process.env.URL;
+
 // Split the filename to get the resolution component, e.g.:
 // given '30x30_Rizzo.png', return an array of [30,30]
 function get_resolution_from_filename(requested_filename){
@@ -145,7 +148,14 @@ exports.handler = (event, context, callback) => {
         data,
         requested_filename,
         requested_resolution,
-        function(){ console.log('New file created: ' + requested_filename + ' at ' + requested_resolution); },
+        function(){
+          console.log('New file created: ' + requested_filename + ' at ' + requested_resolution);
+          callback(null, {
+            statusCode: '301',
+            headers: { 'location': `${URL}/${requested_filename}` },
+            body: ''
+          })
+        },
         function(err){ console.log(err); }
       );
     },
