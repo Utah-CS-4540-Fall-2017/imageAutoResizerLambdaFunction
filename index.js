@@ -150,10 +150,11 @@ exports.handler = (event, context, callback) => {
         requested_resolution,
         function(){
           console.log('New file created: ' + requested_filename + ' at ' + requested_resolution);
+          console.log('Returning a redirect response to: ' + `${URL}/${requested_filename}`);
           callback(null, {
             statusCode: '301',
-            headers: { 'location': `${URL}/${requested_filename}` },
-            body: ''
+            headers: { 'location':  `${URL}/${requested_filename}`},
+            body: '',
           })
         },
         function(err){ console.log(err); }
@@ -163,5 +164,4 @@ exports.handler = (event, context, callback) => {
       console.log('Unable to get the original file.');
     }
   );
-  callback(null, 'Execution complete.');
 }
